@@ -217,7 +217,7 @@
             per_page: perPage
         });
 
-        fetch(`{{ route('consumptionData.api') }}?${params}`)
+        fetch(`/api/consumption?${params}`)
             .then(res => res.json())
             .then(res => {
                 const tbody = document.querySelector('#datatable tbody');
