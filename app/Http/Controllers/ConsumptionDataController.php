@@ -26,6 +26,7 @@ class ConsumptionDataController extends Controller
         $attendance = DB::table('attendance_logs as al')
             ->select(
                 'al.id',
+                'al.statusenabled',
                 'al.nik',
                 'al.meal_type',
                 'al.status',
@@ -38,6 +39,7 @@ class ConsumptionDataController extends Controller
                 'al.attendance_date',
                 'al.attendance_time'
             )
+            ->where('al.statusenabled', true)
             ->orderByDesc('al.attendance_time')
             ->get();
 
@@ -116,6 +118,18 @@ class ConsumptionDataController extends Controller
                 'per_page'     => $perPage,
                 'total'        => $total,
             ]
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        AttendanceLog::where('id', $id)->update([
+            'statusenabled' => 0,
+            'deleted_by' => Auth::user()->name,
+            ]);
+
+        return response()->json([
+            'message' => 'Data berhasil dihapus'
         ]);
     }
 

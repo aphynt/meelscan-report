@@ -90,6 +90,7 @@
                             <th>Food Category</th>
                             <th>Position</th>
                             <th>Rating</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -205,6 +206,63 @@
         `;
     }
 
+    function deleteConsumption(id) {
+        const deleteConsumptionUrl = "{{ route('consumptionData.destroy', ':id') }}";
+        const url = deleteConsumptionUrl.replace(':id', id);
+
+        Swal.fire({
+            title: 'Hapus Data?',
+            text: 'Data yang dihapus tidak dapat dikembalikan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, hapus',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            Swal.fire({
+                title: 'Menghapus...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Gagal menghapus data');
+                return res.json();
+            })
+            .then(res => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: res.message ?? 'Data berhasil dihapus',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                loadAttendance();
+            })
+            .catch(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: err.message || 'Terjadi kesalahan'
+                });
+            });
+        });
+    }
+
 
     function loadAttendance(page = 1) {
         const perPage = document.getElementById('perPage').value;
@@ -217,7 +275,7 @@
             per_page: perPage
         });
 
-        fetch(`/api/consumption?${params}`)
+        fetch(`/consumption-data/api?${params}`)
             .then(res => res.json())
             .then(res => {
                 const tbody = document.querySelector('#datatable tbody');
@@ -225,21 +283,29 @@
 
                 res.data.forEach((row, index) => {
                     tbody.innerHTML += `
-                    <tr>
-                        <td>${(page - 1) * perPage + index + 1}</td>
-                        <td>${formatDateTime(row.attendance_time)}</td>
-                        <td>${row.nik}</td>
-                        <td>${row.name ?? '-'}</td>
-                        <td>${capitalizeFirst(row.meal_type)}</td>
-                        <td>${row.quantity}</td>
-                        <td>${capitalizeFirst(row.food_category)}</td>
-                        <td>${row.position}</td>
-                        <td>${formatRating(row.rating)}</td>
-                    </tr>
-                `;
+                        <tr>
+                            <td>${(page - 1) * perPage + index + 1}</td>
+                            <td>${formatDateTime(row.attendance_time)}</td>
+                            <td>${row.nik}</td>
+                            <td>${row.name ?? '-'}</td>
+                            <td>${capitalizeFirst(row.meal_type)}</td>
+                            <td>${row.quantity}</td>
+                            <td>${capitalizeFirst(row.food_category)}</td>
+                            <td>${row.position}</td>
+                            <td>${formatRating(row.rating)}</td>
+                            <td class="text-center">
+                                <button
+                                    class="btn btn-sm bg-danger-subtle"
+                                    onclick="deleteConsumption(${row.id})"
+                                    title="Delete">
+                                    <i class="mdi mdi-delete fs-14 text-danger"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        `;
                 });
 
-
+                feather.replace();
                 renderPagination(res.meta);
             });
     }

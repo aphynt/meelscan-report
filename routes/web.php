@@ -29,6 +29,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/consumption-data', [ConsumptionDataController::class, 'index'])->name('consumptionData');
     Route::get('/consumption-data/api', [ConsumptionDataController::class, 'apiConsumption'])->name('consumptionData.api');
+    Route::delete('/consumption-data/delete/{id}', [ConsumptionDataController::class, 'destroy'])->name('consumptionData.destroy');
     Route::post('/consumption-data/addManual', [ConsumptionDataController::class, 'addManual'])->name('consumptionData.addManual');
     Route::get('/consumption-data/export', [ConsumptionDataController::class, 'exportExcel'])->name('consumptionData.export');
 
