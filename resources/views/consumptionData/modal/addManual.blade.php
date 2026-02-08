@@ -53,9 +53,9 @@
                             <label class="form-label">Food Category</label>
                             <select name="food_category" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="basic">Basic</option>
-                                <option value="special">Special</option>
-                                <option value="lunchbox">Lunchbox</option>
+                                <option value="1">Basic</option>
+                                <option value="2">Special</option>
+                                <option value="4">Lunchbox</option>
                             </select>
                         </div>
 

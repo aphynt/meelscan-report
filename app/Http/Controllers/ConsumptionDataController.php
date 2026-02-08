@@ -24,6 +24,7 @@ class ConsumptionDataController extends Controller
         $page    = (int) $request->get('page', 1);
 
         $attendance = DB::table('attendance_logs as al')
+        ->leftJoin('ref_meals as rm', 'al.food_category', 'rm.id')
             ->select(
                 'al.id',
                 'al.statusenabled',
@@ -34,7 +35,7 @@ class ConsumptionDataController extends Controller
                 'al.remarks',
                 'al.created_by',
                 'al.rating',
-                'al.food_category',
+                'rm.item as food_category',
                 'al.position',
                 'al.attendance_date',
                 'al.attendance_time'
@@ -144,7 +145,7 @@ class ConsumptionDataController extends Controller
                 'created_by'       => Auth::user()->name,
                 'rating'           => null,
                 'attendance_date'  => $request->attendance_date,
-                'food_category'    => $request->food_category,
+                'food_category'    => (int)$request->food_category,
                 'position'         => $request->position,
                 'rating'           => 0,
                 'attendance_time'  => Carbon::parse($request->attendance_date)->setTimeFrom(Carbon::now()),
@@ -161,6 +162,7 @@ class ConsumptionDataController extends Controller
     public function exportExcel(Request $request)
     {
         $attendance = DB::table('attendance_logs as al')
+        ->leftJoin('ref_meals as rm', 'al.food_category', 'rm.id')
             ->select(
                 'al.id',
                 'al.nik',
@@ -170,7 +172,7 @@ class ConsumptionDataController extends Controller
                 'al.remarks',
                 'al.created_by',
                 'al.rating',
-                'al.food_category',
+                'rm.item as food_category',
                 'al.position',
                 'al.attendance_date',
                 'al.attendance_time'

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employees;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class EmployeesController extends Controller
 {
@@ -23,26 +24,25 @@ class EmployeesController extends Controller
             $q->where('nik', 'like', '%ABM%')
             ->orWhere('nik', 'like', '%SM%')
             ->orWhere('nik', 'like', '%KJM%')
-            ->orWhere('nik', 'like', '%S');
+            ->orWhere('nik', 'like', '%S%');
         })
-        ->where('statusenabled', true)
-        ->selectRaw("
-            nik,
-            name,
-            CASE
-                WHEN statusenabled = 1 THEN 'Active'
-                ELSE 'Inactive'
-            END as statusenabled,
-            COALESCE(room, '') as room
-        ")
-        ->get();
-        // 🔍 Search NIK / Name
+        ->where('statusenabled', 1)
+        ->orderBy('nik', 'asc')
+        ->get()
+        ->map(function ($row) {
+            return [
+                'nik'   => $row->nik,
+                'name'  => $row->name,
+                'statusenabled'=> $row->statusenabled ? 'Active' : 'Inactive',
+                'room'  => $row->room ?? ''
+            ];
+        });
         if ($request->filled('search')) {
             $search = strtolower($request->search);
 
             $data = $data->filter(function ($row) use ($search) {
-                return str_contains(strtolower($row->nik), $search)
-                    || str_contains(strtolower($row->name), $search);
+                return Str::contains(strtolower($row['nik'] ?? ''), $search)
+                    || Str::contains(strtolower($row['name'] ?? ''), $search);
             });
         }
 

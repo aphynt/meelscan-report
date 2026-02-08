@@ -45,11 +45,11 @@
                         <span>Consumption Data</span>
                     </a>
                 </li>
-
+                <li class="menu-title">Report</li>
                 <li>
                     <a href="#" class="tp-link">
                         <i data-feather="file-text"></i>
-                        <span>Monthly Report</span>
+                        <span>Monthly Meals</span>
                     </a>
                 </li>
             </ul>
