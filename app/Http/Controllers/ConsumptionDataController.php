@@ -37,6 +37,7 @@ class ConsumptionDataController extends Controller
                 'al.rating',
                 'rm.item as food_category',
                 'al.position',
+                'al.is_real_face',
                 'al.attendance_date',
                 'al.attendance_time'
             )
@@ -174,6 +175,7 @@ class ConsumptionDataController extends Controller
                 'al.rating',
                 'rm.item as food_category',
                 'al.position',
+                'al.is_real_face',
                 'al.attendance_date',
                 'al.attendance_time'
             )

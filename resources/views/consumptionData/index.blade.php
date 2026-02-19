@@ -87,6 +87,7 @@
                             <th>Name</th>
                             <th>Category</th>
                             <th>Quantity</th>
+                            <th>Face</th>
                             <th>Food Category</th>
                             <th>Position</th>
                             <th>Rating</th>
@@ -119,6 +120,22 @@
             hour: '2-digit',
             minute: '2-digit'
         });
+    }
+
+    function badgeRealFace(value) {
+        if (value === null || value === undefined) {
+            return '<span class="badge bg-secondary">N/A</span>';
+        }
+
+        if (value === true || value === 1 || value === "1") {
+            return '<span class="badge bg-success">Real</span>';
+        }
+
+        if (value === false || value === 0 || value === "0") {
+            return '<span class="badge bg-danger">Fake</span>';
+        }
+
+        return '<span class="badge bg-secondary">N/A</span>';
     }
 
     function capitalizeFirst(text) {
@@ -290,6 +307,7 @@
                             <td>${row.name ?? '-'}</td>
                             <td>${capitalizeFirst(row.meal_type)}</td>
                             <td>${row.quantity}</td>
+                            <td>${badgeRealFace(row.is_real_face)}</td>
                             <td>${capitalizeFirst(row.food_category)}</td>
                             <td>${row.position}</td>
                             <td>${formatRating(row.rating)}</td>
