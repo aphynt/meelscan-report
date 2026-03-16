@@ -22,10 +22,10 @@
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
                             <p class="text-muted mb-1">Total Consumption Today</p>
-                            <h3 class="mb-0 text-primary" id="kpi-total-today">0</h3>
+                            <h3 class="mb-0 text-info" id="kpi-total-today">0</h3>
                         </div>
-                        <div class="avatar bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="mdi mdi-food text-primary fs-22"></i>
+                        <div class="avatar bg-info-subtle rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="mdi mdi-food text-info fs-22"></i>
                         </div>
                     </div>
                 </div>
@@ -37,10 +37,10 @@
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
                             <p class="text-muted mb-1">Breakfast</p>
-                            <h3 class="mb-0 text-success" id="kpi-breakfast">0</h3>
+                            <h3 class="mb-0" id="kpi-breakfast" style="color: rgb(34,197,94)">0</h3>
                         </div>
-                        <div class="avatar bg-success-subtle rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="mdi mdi-coffee text-success fs-22"></i>
+                        <div class="avatar bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="mdi mdi-coffee fs-22"></i>
                         </div>
                     </div>
                 </div>
@@ -67,15 +67,39 @@
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
                             <p class="text-muted mb-1">Dinner</p>
-                            <h3 class="mb-0 text-info" id="kpi-dinner">0</h3>
+                            <h3 class="mb-0 text-success" id="kpi-dinner">0</h3>
                         </div>
-                        <div class="avatar bg-info-subtle rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="mdi mdi-food-steak text-info fs-22"></i>
+                        <div class="avatar bg-success-subtle rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="mdi mdi-food-steak text-success fs-22"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
+        </div>
+
+        <div class="row">
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Today's Peak Hours</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="hourlyChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Meal Proportion (Today)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="sessionDonutChart"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- CHART -->
@@ -92,19 +116,20 @@
                 </div>
             </div>
 
-            <!-- RATING -->
-            {{-- <div class="col-xl-4">
+
+
+            <div class="col-xl-4">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Average Food Rating</h5>
                     </div>
                     <div class="card-body text-center">
-                        <h2 class="text-warning mb-1">4.6</h2>
+                        <h2 class="text-warning mb-1" id="avg-rating-text">0.0</h2>
                         <p class="mb-2 text-muted">Out of 5</p>
-                        <div class="fs-18">⭐⭐⭐⭐☆</div>
+                        <div class="fs-18" id="avg-rating-stars"></div>
                     </div>
                 </div>
-            </div> --}}
+            </div>
 
         </div>
 
@@ -169,5 +194,33 @@
             );
 
             mealChart.render();
+
+            const hourlyLabels = res.hourly.map(i => i.hour + ":00");
+            const hourlyData   = res.hourly.map(i => i.total);
+
+            hourlyChart = new ApexCharts(document.querySelector("#hourlyChart"), {
+                chart: { type: 'bar', height: 320, toolbar: { show: false } },
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } },
+                dataLabels: { enabled: false },
+                series: [{ name: 'Total Porsi', data: hourlyData }],
+                xaxis: { categories: hourlyLabels },
+                colors: ['#6366f1'], // Indigo color
+                title: { text: 'Consumption by Hour', align: 'left', style: { color: '#666' } }
+            });
+            hourlyChart.render();
+
+            // 3. SESSION PROPORTION CHART (Donut Chart Baru)
+            donutChart = new ApexCharts(document.querySelector("#sessionDonutChart"), {
+                chart: { type: 'donut', height: 320 },
+                series: [res.kpi.today.breakfast, res.kpi.today.lunch, res.kpi.today.dinner],
+                labels: ['Breakfast', 'Lunch', 'Dinner'],
+                colors: ['#22c55e', '#f59e0b', '#0ea5e9'],
+                legend: { position: 'bottom' },
+                responsive: [{
+                    breakpoint: 480,
+                    options: { chart: { width: 200 }, legend: { position: 'bottom' } }
+                }]
+            });
+            donutChart.render();
         });
 </script>

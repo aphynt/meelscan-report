@@ -16,60 +16,62 @@ class DashboardController extends Controller
 
     public function api()
     {
-        $today = Carbon::today();
-        $month = Carbon::now()->month;
-        $year  = Carbon::now()->year;
+        try {
+            $today = Carbon::today();
+            $month = Carbon::now()->month;
+            $year  = Carbon::now()->year;
 
-        // ===== KPI =====
-        $kpi = [
-            'today' => [
-                'total' => DB::table('attendance_logs')
-                    ->whereDate('attendance_date', $today)
-                    ->sum('quantity'),
+            // 1. KPI Data (Tetap sama)
+            $kpi = [
+                'today' => [
+                    'total'     => (int) DB::table('attendance_logs')->whereDate('attendance_date', $today)->sum('quantity'),
+                    'breakfast' => (int) DB::table('attendance_logs')->whereDate('attendance_date', $today)->where('meal_type', 'breakfast')->sum('quantity'),
+                    'lunch'     => (int) DB::table('attendance_logs')->whereDate('attendance_date', $today)->where('meal_type', 'lunch')->sum('quantity'),
+                    'dinner'    => (int) DB::table('attendance_logs')->whereDate('attendance_date', $today)->where('meal_type', 'dinner')->sum('quantity'),
+                ],
+                'month' => [
+                    'total'     => (int) DB::table('attendance_logs')->whereMonth('attendance_date', $month)->whereYear('attendance_date', $year)->sum('quantity'),
+                ]
+            ];
 
-                'breakfast' => DB::table('attendance_logs')
-                    ->whereDate('attendance_date', $today)
-                    ->where('meal_type', 'breakfast')
-                    ->sum('quantity'),
+            // 2. Trend 7 Hari (Tetap sama)
+            $trend = DB::table('attendance_logs')
+                ->selectRaw("attendance_date,
+                    SUM(CASE WHEN meal_type='breakfast' THEN quantity ELSE 0 END) as breakfast,
+                    SUM(CASE WHEN meal_type='lunch' THEN quantity ELSE 0 END) as lunch,
+                    SUM(CASE WHEN meal_type='dinner' THEN quantity ELSE 0 END) as dinner")
+                ->whereBetween('attendance_date', [Carbon::now()->subDays(6), Carbon::today()])
+                ->groupBy('attendance_date')
+                ->orderBy('attendance_date')
+                ->get();
 
-                'lunch' => DB::table('attendance_logs')
-                    ->whereDate('attendance_date', $today)
-                    ->where('meal_type', 'lunch')
-                    ->sum('quantity'),
-
-                'dinner' => DB::table('attendance_logs')
-                    ->whereDate('attendance_date', $today)
-                    ->where('meal_type', 'dinner')
-                    ->sum('quantity'),
-            ],
-
-            'month' => [
-                'total' => DB::table('attendance_logs')
-                    ->whereMonth('attendance_date', $month)
-                    ->whereYear('attendance_date', $year)
-                    ->sum('quantity'),
-            ]
-        ];
-
-        // ===== CHART (7 hari terakhir) =====
-        $trend = DB::table('attendance_logs')
-            ->selectRaw("
-                attendance_date,
-                SUM(CASE WHEN meal_type='breakfast' THEN quantity ELSE 0 END) as breakfast,
-                SUM(CASE WHEN meal_type='lunch' THEN quantity ELSE 0 END) as lunch,
-                SUM(CASE WHEN meal_type='dinner' THEN quantity ELSE 0 END) as dinner
-            ")
-            ->whereBetween('attendance_date', [
-                Carbon::now()->subDays(6),
-                Carbon::today()
-            ])
-            ->groupBy('attendance_date')
-            ->orderBy('attendance_date')
+            // 3. Distribusi Per Jam (Perbaikan sintaks di sini)
+           $hourly = DB::table('attendance_logs')
+            ->select(
+                DB::raw('DATEPART(HOUR, created_at) as hour'),
+                DB::raw('SUM(quantity) as total')
+            )
+            ->whereDate('attendance_date', $today)
+            ->groupBy(DB::raw('DATEPART(HOUR, created_at)'))
+            ->orderBy('hour', 'ASC')
             ->get();
 
-        return response()->json([
-            'kpi'   => $kpi,
-            'trend' => $trend
-        ]);
+            $rating = DB::table('attendance_logs')
+            ->whereMonth('attendance_date', $month)
+            ->whereYear('attendance_date', $year)
+            ->where('rating', '>', 0)
+            ->avg('rating');
+
+            return response()->json([
+                'kpi'    => $kpi,
+                'trend'  => $trend,
+                'hourly' => $hourly,
+                'rating' => $rating ? round($rating, 1) : 0
+            ]);
+
+        } catch (\Exception $e) {
+            // Ini akan membantu Anda melihat error asli di response network tab
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

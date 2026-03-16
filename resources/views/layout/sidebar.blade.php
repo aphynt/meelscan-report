@@ -47,7 +47,7 @@
                 </li>
                 <li class="menu-title">Report</li>
                 <li>
-                    <a href="#" class="tp-link">
+                    <a href="javascript:void(0)" class="tp-link dev-feature">
                         <i data-feather="file-text"></i>
                         <span>Monthly Meals</span>
                     </a>
@@ -62,3 +62,29 @@
     </div>
 </div>
 <div class="content-page">
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seleksi semua elemen dengan class dev-feature
+        const devFeatures = document.querySelectorAll('.dev-feature');
+
+        devFeatures.forEach(feature => {
+            feature.addEventListener('click', function(e) {
+                e.preventDefault(); // Mencegah link pindah halaman
+
+                Swal.fire({
+                    title: 'Under Development',
+                    text: 'Fitur "Monthly Meals" sedang dalam tahap pengembangan.',
+                    icon: 'info',
+                    confirmButtonText: 'Oke, Mengerti',
+                    confirmButtonColor: '#6366f1', // Warna indigo sesuai tema dashboard Anda
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
+            });
+        });
+    });
+</script>
