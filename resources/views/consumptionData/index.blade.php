@@ -88,6 +88,7 @@
                             <th>Category</th>
                             <th>Quantity</th>
                             <th>Face</th>
+                            <th>Order Type</th>
                             <th>Food Category</th>
                             <th>Position</th>
                             <th>Rating</th>
@@ -308,6 +309,7 @@
                             <td>${capitalizeFirst(row.meal_type)}</td>
                             <td>${row.quantity}</td>
                             <td>${badgeRealFace(row.is_real_face)}</td>
+                            <td>${capitalizeFirst(row.order_type)}</td>
                             <td>${capitalizeFirst(row.food_category)}</td>
                             <td>${row.position}</td>
                             <td>${formatRating(row.rating)}</td>

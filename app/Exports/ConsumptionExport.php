@@ -50,6 +50,7 @@ class ConsumptionExport implements
             'RATING',
             'ATTENDANCE DATE',
             'ATTENDANCE TIME',
+            'ORDER TYPE',
         ];
     }
 
@@ -78,6 +79,7 @@ class ConsumptionExport implements
             },
             Carbon::parse($row->attendance_date)->format('d-m-Y'),
             Carbon::parse($row->attendance_time)->format('H:i'),
+            $row->order_type,
         ];
     }
 
