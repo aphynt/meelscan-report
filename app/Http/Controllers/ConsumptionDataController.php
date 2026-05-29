@@ -165,15 +165,15 @@ class ConsumptionDataController extends Controller
     {
         try {
 
-            if ($request->attendance_type == 'employee') {
+            if ($request->attendance_type == 'visitor') {
 
-                $nik = strtoupper($request->nik);
-                $visitorName = null;
+                $nik = strtoupper($request->visitor_nik);
+                $visitorName = $request->visitor_name;
 
             } else {
 
-                $nik = null;
-                $visitorName = $request->visitor_name;
+                $nik = strtoupper($request->nik);
+                $visitorName = null;
             }
 
             AttendanceLog::create([

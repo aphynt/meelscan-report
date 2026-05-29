@@ -50,6 +50,15 @@
                             <label class="form-label">NIK</label>
                             <select name="nik" id="nikSelect" class="form-select"></select>
                         </div>
+                        <div class="col-md-4 d-none" id="visitorNikContainer">
+                            <label class="form-label">Visitor NIK</label>
+                            <input type="text"
+                                name="visitor_nik"
+                                id="visitorNik"
+                                class="form-control"
+                                placeholder="Input Visitor NIK">
+                        </div>
+
                         <div class="col-md-4 d-none" id="visitorContainer">
                             <label class="form-label">Visitor Name</label>
                             <input type="text"
@@ -134,27 +143,37 @@
 <script>
     $(document).on('change', '.attendance-type', function () {
 
-    let type = $(this).val();
+        let type = $(this).val();
 
-    if (type === 'employee') {
+        if (type === 'employee') {
 
-        $('#nikContainer').removeClass('d-none');
-        $('#visitorContainer').addClass('d-none');
+            $('#nikContainer').removeClass('d-none');
 
-        $('#nikSelect').prop('required', true);
-        $('#visitorName').prop('required', false);
+            $('#visitorContainer').addClass('d-none');
+            $('#visitorNikContainer').addClass('d-none');
 
-    } else {
+            $('#nikSelect').prop('required', true);
 
-        $('#nikContainer').addClass('d-none');
-        $('#visitorContainer').removeClass('d-none');
+            $('#visitorName').prop('required', false);
+            $('#visitorNik').prop('required', false);
 
-        $('#nikSelect').prop('required', false);
-        $('#visitorName').prop('required', true);
+        } else {
 
-        $('#nikSelect').val(null).trigger('change');
-    }
-});
+            $('#nikContainer').addClass('d-none');
+
+            $('#visitorContainer').removeClass('d-none');
+            $('#visitorNikContainer').removeClass('d-none');
+
+            $('#nikSelect').prop('required', false);
+
+            $('#visitorName').prop('required', true);
+            $('#visitorNik').prop('required', true);
+
+            $('#nikSelect').val(null).trigger('change');
+        }
+    });
+
+
 $('#modalAddManual').on('shown.bs.modal', function () {
 
     $('#nikSelect').select2({

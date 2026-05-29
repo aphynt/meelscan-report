@@ -63,7 +63,7 @@ class ConsumptionExport implements
         return [
             $this->rowNumber,
             $isVisitor ? 'Visitor' : 'Employee',
-            $isVisitor ? '-' : $row->nik,
+            $row->nik,
             $isVisitor ? $row->visitor_name : $row->name,
             ucfirst($row->meal_type),
             $row->quantity,
