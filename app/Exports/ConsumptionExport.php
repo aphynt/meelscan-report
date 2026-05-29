@@ -34,11 +34,11 @@ class ConsumptionExport implements
         return $this->data;
     }
 
-    /** ✅ HEADER SESUAI FILE */
     public function headings(): array
     {
         return [
             'NO',
+            'TYPE',
             'NIK',
             'NAME',
             'MEAL TYPE',
@@ -54,18 +54,26 @@ class ConsumptionExport implements
         ];
     }
 
-    /** ✅ DATA MAPPING SESUAI HEADER */
     public function map($row): array
     {
         $this->rowNumber++;
 
+        $isVisitor = !empty($row->visitor_name);
+
         return [
             $this->rowNumber,
-            $row->nik,
-            $row->name,
+            $isVisitor ? 'Visitor' : 'Employee',
+            $isVisitor ? '-' : $row->nik,
+            $isVisitor ? $row->visitor_name : $row->name,
             ucfirst($row->meal_type),
             $row->quantity,
-            $row->is_real_face,
+            $row->is_real_face === null
+            ? 'N/A'
+            : match ((int) $row->is_real_face) {
+                0 => 'Fake',
+                1 => 'Real',
+                default => 'N/A',
+            },
             $row->created_by,
             $row->position,
             $row->food_category,
@@ -83,7 +91,6 @@ class ConsumptionExport implements
         ];
     }
 
-    /** ✅ STYLING SESUAI FILE */
     public function styles(Worksheet $sheet)
     {
         $lastRow    = $sheet->getHighestRow();

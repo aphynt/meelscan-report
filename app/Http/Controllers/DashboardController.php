@@ -70,7 +70,6 @@ class DashboardController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            // Ini akan membantu Anda melihat error asli di response network tab
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

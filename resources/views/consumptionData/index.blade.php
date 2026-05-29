@@ -92,6 +92,8 @@
                             <th>Food Category</th>
                             <th>Position</th>
                             <th>Rating</th>
+                            <th>Add By</th>
+                            <th>Documentation</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -109,9 +111,28 @@
     </div>
 </div>
 
+@include('consumptionData.modal.showPhoto')
 @include('layout.footer')
 
 <script>
+    $(document).on('click', '.btn-view-photo', function () {
+
+        let id = $(this).data('id');
+
+        $('#photoNotFound').addClass('d-none');
+        $('#modalPhoto').removeClass('d-none');
+
+        $('#modalPhoto')
+            .off('error')
+            .on('error', function () {
+                $(this).addClass('d-none');
+                $('#photoNotFound').removeClass('d-none');
+            });
+
+        $('#modalPhoto').attr('src', `/consumption-data/photo/${id}`);
+
+        $('#photoModal').modal('show');
+    });
     function formatDateTime(datetime) {
         if (!datetime) return '-';
         return new Date(datetime).toLocaleString('id-ID', {
@@ -304,7 +325,7 @@
                         <tr>
                             <td>${(page - 1) * perPage + index + 1}</td>
                             <td>${formatDateTime(row.attendance_time)}</td>
-                            <td>${row.nik}</td>
+                            <td>${row.nik ?? '-'}</td>
                             <td>${row.name ?? '-'}</td>
                             <td>${capitalizeFirst(row.meal_type)}</td>
                             <td>${row.quantity}</td>
@@ -313,6 +334,15 @@
                             <td>${capitalizeFirst(row.food_category)}</td>
                             <td>${row.position}</td>
                             <td>${formatRating(row.rating)}</td>
+                            <td>${capitalizeFirst(row.created_by)}</td>
+                            <td>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-primary btn-view-photo"
+                                    data-id="${row.id}">
+                                    Show Photo
+                                </button>
+                            </td>
                             <td class="text-center">
                                 <button
                                     class="btn btn-sm bg-danger-subtle"

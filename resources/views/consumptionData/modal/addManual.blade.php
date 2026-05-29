@@ -16,11 +16,47 @@
                 @csrf
                 <div class="modal-body">
                     <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Attendance Type</label>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input attendance-type"
+                                    type="radio"
+                                    name="attendance_type"
+                                    id="employeeType"
+                                    value="employee"
+                                    checked>
+
+                                <label class="form-check-label" for="employeeType">
+                                    Employee
+                                </label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input attendance-type"
+                                    type="radio"
+                                    name="attendance_type"
+                                    id="visitorType"
+                                    value="visitor">
+
+                                <label class="form-check-label" for="visitorType">
+                                    Visitor
+                                </label>
+                            </div>
+                        </div>
 
                         <!-- NIK -->
-                        <div class="col-md-4">
+                        <div class="col-md-4" id="nikContainer">
                             <label class="form-label">NIK</label>
-                            <select name="nik" id="nikSelect" class="form-select" required></select>
+                            <select name="nik" id="nikSelect" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4 d-none" id="visitorContainer">
+                            <label class="form-label">Visitor Name</label>
+                            <input type="text"
+                                name="visitor_name"
+                                id="visitorName"
+                                class="form-control"
+                                placeholder="Input Visitor Name">
                         </div>
                         <!-- Meal Type -->
                         <div class="col-md-4">
@@ -58,6 +94,14 @@
                                 <option value="4">Lunchbox</option>
                             </select>
                         </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Order Type</label>
+                            <select name="order_type" class="form-select" required>
+                                <option value="">-- Select --</option>
+                                <option value="Dine In">Dine In</option>
+                                <option value="Take Away">Take Away</option>
+                            </select>
+                        </div>
 
                         <!-- Attendance Date -->
                         <div class="col-md-4">
@@ -88,6 +132,29 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+    $(document).on('change', '.attendance-type', function () {
+
+    let type = $(this).val();
+
+    if (type === 'employee') {
+
+        $('#nikContainer').removeClass('d-none');
+        $('#visitorContainer').addClass('d-none');
+
+        $('#nikSelect').prop('required', true);
+        $('#visitorName').prop('required', false);
+
+    } else {
+
+        $('#nikContainer').addClass('d-none');
+        $('#visitorContainer').removeClass('d-none');
+
+        $('#nikSelect').prop('required', false);
+        $('#visitorName').prop('required', true);
+
+        $('#nikSelect').val(null).trigger('change');
+    }
+});
 $('#modalAddManual').on('shown.bs.modal', function () {
 
     $('#nikSelect').select2({

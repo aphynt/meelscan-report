@@ -29,8 +29,8 @@ class ConsumptionDataController extends Controller
                 'al.id',
                 'al.statusenabled',
                 'al.nik',
+                'al.visitor_name',
                 'al.meal_type',
-                'al.status',
                 'al.quantity',
                 'al.remarks',
                 'al.order_type',
@@ -40,13 +40,18 @@ class ConsumptionDataController extends Controller
                 'al.position',
                 'al.is_real_face',
                 'al.attendance_date',
-                'al.attendance_time'
+                'al.attendance_time',
+                'al.photo_path',
             )
             ->where('al.statusenabled', true)
             ->orderByDesc('al.attendance_time')
             ->get();
 
-        $nikList = $attendance->pluck('nik')->unique()->values();
+        $nikList = $attendance
+            ->pluck('nik')
+            ->filter()
+            ->unique()
+            ->values();
 
         $hrData = DB::connection('it')
             ->table('tbl_data_hr')
@@ -54,7 +59,18 @@ class ConsumptionDataController extends Controller
             ->pluck('Nama', 'Nik');
 
         $data = $attendance->map(function ($row) use ($hrData) {
-            $row->name = $hrData[$row->nik] ?? null;
+
+            if (!empty($row->visitor_name)) {
+
+                $row->name = $row->visitor_name;
+                $row->attendance_type = 'visitor';
+
+            } else {
+
+                $row->name = $hrData[$row->nik] ?? null;
+                $row->attendance_type = 'employee';
+            }
+
             return $row;
         });
 
@@ -100,8 +116,10 @@ class ConsumptionDataController extends Controller
             $search = strtolower($request->search);
 
             $data = $data->filter(function ($row) use ($search) {
-                return str_contains(strtolower($row->nik), $search)
-                    || str_contains(strtolower($row->name ?? ''), $search);
+
+                return str_contains(strtolower($row->nik ?? ''), $search)
+                    || str_contains(strtolower($row->name ?? ''), $search)
+                    || str_contains(strtolower($row->visitor_name ?? ''), $search);
             });
         }
 
@@ -124,6 +142,13 @@ class ConsumptionDataController extends Controller
         ]);
     }
 
+    public function showPhoto($id)
+    {
+        $photo = AttendanceLog::findOrFail($id);
+
+        return response()->file(storage_path('app/private/' . $photo->photo_path));
+    }
+
     public function destroy($id)
     {
         AttendanceLog::where('id', $id)->update([
@@ -139,25 +164,43 @@ class ConsumptionDataController extends Controller
     public function addManual(Request $request)
     {
         try {
-            AttendanceLog::insert([
-                'nik'              => strtoupper($request->nik),
+
+            if ($request->attendance_type == 'employee') {
+
+                $nik = strtoupper($request->nik);
+                $visitorName = null;
+
+            } else {
+
+                $nik = null;
+                $visitorName = $request->visitor_name;
+            }
+
+            AttendanceLog::create([
+                'nik'              => $nik,
+                'visitor_name'     => $visitorName,
                 'meal_type'        => $request->meal_type,
                 'quantity'         => $request->quantity,
-                'status'           => 'manual',
+                'status'           => 'present',
                 'created_by'       => Auth::user()->name,
-                'rating'           => null,
+                'order_type'       => $request->order_type,
                 'attendance_date'  => $request->attendance_date,
-                'food_category'    => (int)$request->food_category,
+                'food_category'    => (int) $request->food_category,
                 'position'         => $request->position,
                 'rating'           => 0,
-                'attendance_time'  => Carbon::parse($request->attendance_date)->setTimeFrom(Carbon::now()),
-                'created_at'       => Carbon::now(),
-                'updated_at'       => Carbon::now(),
+                'attendance_time'  => Carbon::parse($request->attendance_date)
+                                            ->setTimeFrom(Carbon::now()),
+                'created_at'       => now(),
+                'updated_at'       => now(),
             ]);
 
-            return redirect()->back()->with('success', 'Manual attendance saved successfully');
+            return redirect()->back()
+                ->with('success', 'Manual attendance saved successfully');
+
         } catch (\Throwable $e) {
-            return redirect()->back()->with('info', 'Manual attendance submission failed.'. $e->getMessage());
+
+            return redirect()->back()
+                ->with('info', 'Manual attendance submission failed. ' . $e->getMessage());
         }
     }
 
@@ -168,6 +211,7 @@ class ConsumptionDataController extends Controller
             ->select(
                 'al.id',
                 'al.nik',
+                'al.visitor_name',
                 'al.meal_type',
                 'al.status',
                 'al.quantity',

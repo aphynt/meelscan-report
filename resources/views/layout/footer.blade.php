@@ -20,7 +20,7 @@
         <script src="{{ asset('admin/dist') }}/assets/libs/feather-icons/feather.min.js"></script>
 
         <!-- for basic area chart -->
-        <script src="https://apexcharts.com/samples/{{ asset('admin/dist') }}/assets/stock-prices.js"></script>
+        {{-- <script src="https://apexcharts.com/samples/{{ asset('admin/dist') }}/assets/stock-prices.js"></script> --}}
 
 
         <!-- Flatpickr Timepicker Plugin js -->
