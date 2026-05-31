@@ -225,6 +225,7 @@ class ConsumptionDataController extends Controller
                 'al.attendance_date',
                 'al.attendance_time'
             )
+            ->where('al.statusenabled', true)
             ->orderByDesc('al.attendance_time')
             ->get();
 
