@@ -385,7 +385,7 @@
                     html=`
                     <tr>
                         <td colspan="4" class="text-center text-muted">
-                            Tidak ada data Healthy Menu
+                            No data.
                         </td>
                     </tr>`;
                 }

@@ -165,7 +165,7 @@
                                 <tr>
                                     <th width="60">No</th>
                                     <th width="120">NIK</th>
-                                    <th>Nama</th>
+                                    <th>Name</th>
                                     <th>Additional</th>
                                     <th width="120" class="text-center">Action</th>
                                 </tr>
