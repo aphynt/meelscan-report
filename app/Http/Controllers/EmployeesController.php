@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employees;
+use App\Models\HealthyMenu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -19,24 +20,27 @@ class EmployeesController extends Controller
     {
         $perPage = (int) $request->get('per_page', 10);
         $page    = (int) $request->get('page', 1);
+        $healthyNik = HealthyMenu::pluck('nik')->toArray();
 
         $data = Employees::where(function ($q) {
             $q->where('nik', 'like', '%ABM%')
             ->orWhere('nik', 'like', '%SM%')
             ->orWhere('nik', 'like', '%KJM%')
             ->orWhere('nik', 'like', '%S%');
-        })
-        ->where('statusenabled', 1)
-        ->orderBy('nik', 'asc')
-        ->get()
-        ->map(function ($row) {
-            return [
-                'nik'   => $row->nik,
-                'name'  => $row->name,
-                'statusenabled'=> $row->statusenabled ? 'Active' : 'Inactive',
-                'room'  => $row->room ?? ''
-            ];
-        });
+            })
+            ->where('statusenabled', 1)
+            ->orderBy('nik')
+            ->get()
+            ->map(function ($row) use ($healthyNik) {
+
+                return [
+                    'nik'   => $row->nik,
+                    'name'  => $row->name,
+                    'statusenabled' => $row->statusenabled ? 'Active' : 'Inactive',
+                    'room' => $row->room,
+                    'healthy' => in_array($row->nik, $healthyNik),
+                ];
+            });
         if ($request->filled('search')) {
             $search = strtolower($request->search);
 
@@ -83,6 +87,102 @@ class EmployeesController extends Controller
             ]);
 
         return response()->json($data);
+    }
+
+    public function updateHealthy(Request $request)
+    {
+        Employees::where('nik', $request->nik)
+            ->update([
+                'healthy' => $request->healthy
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Employee Healthy Menu status updated successfully.'
+        ]);
+    }
+
+    public function employees(Request $request)
+    {
+        $search = $request->q;
+
+        $employees = Employees::query()
+            ->when($search, function ($q) use ($search) {
+                $q->where('nik', 'like', "%{$search}%")
+                ->orWhere('name', 'like', "%{$search}%");
+            })
+            ->limit(20)
+            ->get();
+
+        return response()->json(
+            $employees->map(function ($e) {
+                return [
+                    'id' => $e->id,
+                    'nik' => $e->nik,
+                    'name' => $e->name,
+                    'text' => $e->nik.' - '.$e->name
+                ];
+            })
+        );
+    }
+
+    public function healthy()
+    {
+        return HealthyMenu::orderBy('created_at')->get();
+    }
+
+    public function setHealthy(Request $request)
+    {
+        if ($request->type == 'employee') {
+
+            $employee = Employees::where('nik', $request->nik)->first();
+
+            if (!$employee) {
+                return response()->json([
+                    'message' => 'Employee not found.'
+                ], 404);
+            }
+
+            $nik = $employee->nik;
+            $name = $employee->name;
+            $additional = $request->additional;
+
+        } else {
+
+            $request->validate([
+                'nik'  => 'required',
+                'name' => 'required'
+            ]);
+
+            $nik = $request->nik;
+            $name = $request->name;
+            $additional = $request->additional;
+        }
+
+        if (HealthyMenu::where('nik', $nik)->exists()) {
+            return response()->json([
+                'message' => 'Employee already exists.'
+            ], 422);
+        }
+
+        HealthyMenu::create([
+            'nik'        => $nik,
+            'name'       => $name,
+            'additional' => $additional
+        ]);
+
+        return response()->json([
+            'message' => 'Employee added successfully.'
+        ]);
+    }
+
+    public function removeHealthy(Request $request)
+    {
+        HealthyMenu::where('nik', $request->nik)->delete();
+
+        return response()->json([
+            'message' => 'Employee removed from the Healthy Menu successfully.'
+        ]);
     }
 
 }

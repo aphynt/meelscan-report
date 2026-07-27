@@ -26,6 +26,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/employees', [EmployeesController::class, 'index'])->name('employees');
     Route::get('/employees/api', [EmployeesController::class, 'apiEmployees'])->name('employees.api');
     Route::get('/employees/search', [EmployeesController::class, 'search'])->name('employees.search');
+    Route::post('/employees/update-healthy',[EmployeesController::class,'updateHealthy'])->name('employees.updateHealthy');
+    Route::get('/employees/healthy', [EmployeesController::class, 'healthy'])->name('employees.healthy');
+    Route::post('/employees/set-healthy', [EmployeesController::class, 'setHealthy'])->name('employees.setHealthy');
+    Route::post('/employees/remove-healthy', [EmployeesController::class, 'removeHealthy'])->name('employees.removeHealthy');
 
     Route::get('/consumption-data', [ConsumptionDataController::class, 'index'])->name('consumptionData');
     Route::get('/consumption-data/api', [ConsumptionDataController::class, 'apiConsumption'])->name('consumptionData.api');
