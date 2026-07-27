@@ -171,7 +171,7 @@
                             <td>${row.name}</td>
                             <td>${row.statusenabled}</td>
                             <td>${row.room ?? ''}</td>
-                            <td>${row.healthy == 1 ? 'Ya' : 'Tidak'}</td>
+                            <td>${row.healthy == 1 ? 'Yes' : 'No'}</td>
 
                         </tr>
                     `;
