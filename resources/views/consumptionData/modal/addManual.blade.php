@@ -109,6 +109,7 @@
                                 <option value="">-- Select --</option>
                                 <option value="Dine In">Dine In</option>
                                 <option value="Take Away">Take Away</option>
+                                <option value="Menu Sehat">Menu Sehat</option>
                             </select>
                         </div>
 
