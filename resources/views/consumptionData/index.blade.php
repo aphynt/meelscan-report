@@ -32,18 +32,28 @@
                 <form id="filterForm">
                     <div class="row g-3 align-items-end">
 
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label">Period</label>
                             <input type="text" class="form-control" id="rangecalendar-datepicker" name="period" placeholder="Range Date">
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label">Food Category</label>
                             <select name="category" class="form-select">
                                 <option value="">All</option>
                                 <option value="breakfast">Breakfast</option>
                                 <option value="lunch">Lunch</option>
                                 <option value="dinner">Dinner</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Order Type</label>
+                            <select name="order_type_filter" class="form-select">
+                                <option value="">All</option>
+                                <option value="Dine In">Dine In</option>
+                                <option value="Take Away">Take Away</option>
+                                <option value="Menu Sehat">Menu Sehat</option>
                             </select>
                         </div>
 
@@ -309,6 +319,7 @@
         const params = new URLSearchParams({
             period: document.querySelector('[name="period"]').value,
             category: document.querySelector('[name="category"]').value,
+            order_type: document.querySelector('[name="order_type_filter"]').value,
             search: document.querySelector('[name="search"]').value,
             page: page,
             per_page: perPage
@@ -370,6 +381,7 @@
         const params = new URLSearchParams({
             period: document.querySelector('[name="period"]').value,
             category: document.querySelector('[name="category"]').value,
+            order_type: document.querySelector('[name="order_type"]').value,
             search: document.querySelector('[name="search"]').value,
         });
 

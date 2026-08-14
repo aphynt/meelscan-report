@@ -112,6 +112,10 @@ class ConsumptionDataController extends Controller
             $data = $data->where('meal_type', $request->category);
         }
 
+        if ($request->filled('order_type')) {
+            $data = $data->where('order_type', $request->order_type);
+        }
+
         if ($request->filled('search')) {
             $search = strtolower($request->search);
 
