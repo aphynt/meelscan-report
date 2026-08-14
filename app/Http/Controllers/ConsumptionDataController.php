@@ -116,6 +116,14 @@ class ConsumptionDataController extends Controller
             $data = $data->where('order_type', $request->order_type);
         }
 
+        if ($request->filled('created_by')) {
+            if ($request->created_by === 'system') {
+                $data = $data->where('created_by', 'system');
+            } elseif ($request->created_by === 'non_system') {
+                $data = $data->where('created_by', '<>', 'system');
+            }
+        }
+
         if ($request->filled('search')) {
             $search = strtolower($request->search);
 
