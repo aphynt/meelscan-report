@@ -58,16 +58,22 @@ class ConsumptionDataController extends Controller
             ->whereIn('Nik', $nikList)
             ->pluck('Nama', 'Nik');
 
-        $data = $attendance->map(function ($row) use ($hrData) {
+        $manualNames = [
+            'M01498' => 'dr. Efryan Iswara S.ked',
+            'M01099' => 'dr. Achmad Nursyamsir',
+            'M01641' => 'dr. Raihan Syarif Humaidy',
+        ];
+
+        $data = $attendance->map(function ($row) use ($hrData, $manualNames) {
 
             if (!empty($row->visitor_name)) {
-
                 $row->name = $row->visitor_name;
                 $row->attendance_type = 'visitor';
-
             } else {
+                $row->name = $hrData[$row->nik]
+                    ?? $manualNames[$row->nik]
+                    ?? null;
 
-                $row->name = $hrData[$row->nik] ?? null;
                 $row->attendance_type = 'employee';
             }
 
@@ -248,8 +254,25 @@ class ConsumptionDataController extends Controller
             ->whereIn('Nik', $nikList)
             ->pluck('Nama', 'Nik');
 
-        $data = $attendance->map(function ($row) use ($hrData) {
-            $row->name = $hrData[$row->nik] ?? null;
+        $manualNames = [
+            'M01498' => 'dr. Efryan Iswara S.ked',
+            'M01099' => 'dr. Achmad Nursyamsir',
+            'M01641' => 'dr. Raihan Syarif Humaidy',
+        ];
+
+        $data = $attendance->map(function ($row) use ($hrData, $manualNames) {
+
+            if (!empty($row->visitor_name)) {
+                $row->name = $row->visitor_name;
+                $row->attendance_type = 'visitor';
+            } else {
+                $row->name = $hrData[$row->nik]
+                    ?? $manualNames[$row->nik]
+                    ?? null;
+
+                $row->attendance_type = 'employee';
+            }
+
             return $row;
         });
 
