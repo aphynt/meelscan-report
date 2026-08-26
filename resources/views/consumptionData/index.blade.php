@@ -86,8 +86,9 @@
                             <label class="form-label">Order Type</label>
                             <select class="form-select" name="order_type_filter">
                                 <option value="">All</option>
-                                <option value="dine_in">Dine In</option>
-                                <option value="take_away">Take Away</option>
+                                <option value="Dine In">Dine In</option>
+                                <option value="Take Away">Take Away</option>
+                                <option value="Menu Sehat">Menu Sehat</option>
                             </select>
                         </div>
                         <div class="col-md-1">
