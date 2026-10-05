@@ -1,0 +1,5 @@
+@include('layout.head')
+@include('layout.topbar')
+@include('layout.sidebar')
+<div class="content"><div class="container-fluid"><div class="mc-page-header"><div><h1 class="mc-page-title">User Management</h1><p class="mc-page-subtitle">Daftar akun aplikasi. Mode read-only untuk menghindari perubahan akses tanpa role model yang jelas.</p></div></div><div class="mc-panel"><div class="mc-panel-head"><div><div class="mc-panel-title">Application Users</div><div class="mc-panel-subtitle">Existing users table</div></div><span class="mc-soft-chip">{{ $users->count() }} users</span></div><div class="table-responsive"><table class="mc-table-modern"><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Access</th></tr></thead><tbody>@forelse($users as $user)<tr><td>#{{ $user->id }}</td><td><strong>{{ $user->name }}</strong></td><td>{{ $user->email ?: '—' }}</td><td><span class="mc-status green">Active Account</span></td></tr>@empty<tr><td colspan="4"><div class="mc-empty">No users found.</div></td></tr>@endforelse</tbody></table></div></div></div></div>
+@include('layout.footer')
